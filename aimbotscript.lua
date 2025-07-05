@@ -6,7 +6,7 @@ local camera = workspace.CurrentCamera
 -- Settings
 local AIM_PART = "Head"
 local MAX_DISTANCE = 300
-local FOV_RADIUS = 200
+local FOV_RADIUS = 89
 
 local aimEnabled = false
 local espEnabled = false

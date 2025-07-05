@@ -1,42 +1,43 @@
 struct ESPSettings {
-    bool enabled = false;           // On/Off tổng
-    bool showLineAndBox = true;     // Line + Box gộp chung
-    bool showNames = true;          // Tên riêng
+    bool enabled = false;           // Master toggle for ESP On/Off
+    bool showLineAndBox = true;     // Toggle for showing both Line and Box together
+    bool showNames = true;          // Toggle for showing player names separately
 };
 
-ESPSettings espMenu;
+ESPSettings espSettings;
 
 void RenderESPMenu() {
     ImGui::Begin("ESP Menu");
 
-    ImGui::Checkbox("ESP On/Off", &espMenu.enabled);
+    ImGui::Checkbox("ESP On/Off", &espSettings.enabled);
 
-    ImGui::BeginDisabled(!espMenu.enabled);
-    ImGui::Checkbox("Show Line & Box", &espMenu.showLineAndBox);
-    ImGui::Checkbox("Show Names", &espMenu.showNames);
+    ImGui::BeginDisabled(!espSettings.enabled);
+    ImGui::Checkbox("Show Line & Box", &espSettings.showLineAndBox);
+    ImGui::Checkbox("Show Names", &espSettings.showNames);
     ImGui::EndDisabled();
 
     ImGui::End();
 }
 
 void RenderESPForPlayer(Player player) {
-    if (!espMenu.enabled) return;
+    if (!espSettings.enabled) return;
 
-    Vector headScreen, feetScreen;
-    if (!WorldToScreen(player.headPosition, headScreen)) return;
-    if (!WorldToScreen(player.feetPosition, feetScreen)) return;
+    Vector headScreenPos, feetScreenPos;
+    if (!WorldToScreen(player.headPosition, headScreenPos)) return;
+    if (!WorldToScreen(player.feetPosition, feetScreenPos)) return;
 
-    if (espMenu.showLineAndBox) {
-        // Vẽ line
-        DrawLine(ScreenWidth / 2, ScreenHeight, feetScreen.x, feetScreen.y, Color::Red);
+    if (espSettings.showLineAndBox) {
+        // Draw line from bottom center of screen to player's feet
+        DrawLine(ScreenWidth / 2, ScreenHeight, feetScreenPos.x, feetScreenPos.y, Color::Red);
 
-        // Vẽ box
-        float height = feetScreen.y - headScreen.y;
-        float width = height / 2.0f;
-        DrawBox(headScreen.x - width / 2, headScreen.y, width, height, Color::Green);
+        // Draw bounding box around the player
+        float boxHeight = feetScreenPos.y - headScreenPos.y;
+        float boxWidth = boxHeight / 2.0f;
+        DrawBox(headScreenPos.x - boxWidth / 2, headScreenPos.y, boxWidth, boxHeight, Color::Green);
     }
 
-    if (espMenu.showNames) {
-        DrawTextCentered(player.name.c_str(), headScreen.x, headScreen.y - 15, Color::White);
+    if (espSettings.showNames) {
+        // Draw player name centered above the head
+        DrawTextCentered(player.name.c_str(), headScreenPos.x, headScreenPos.y - 15, Color::White);
     }
 }
